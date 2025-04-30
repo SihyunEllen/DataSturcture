@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include<stdlib.h>
+
+typedef struct Node{
+  int data;
+  struct Node* next;
+}node;
+void Input(node* header , int num);
+int subset(node* headA, node* headB);
+void PRT(node* head);
+node* Union(node* A, node*B);
+node*Intersect(node*A, node*B);
+
+
+int main(void) {
+
+  int n1 , n2 , num;
+  node * head1 =(node*)malloc(sizeof(node));
+  node * head2 =(node*)malloc(sizeof(node));
+  scanf("%d",&n1);
+  for(int i=0; i<n1; i++)
+  {
+      scanf("%d",&num);
+      Input(head1,num);
+  }
+  scanf("%d",&n2);
+  for(int i=0; i<n2; i++)
+  {   scanf("%d",&num);
+      Input(head2,num);
+  }
+
+  node*U = Union(head1,head2);
+  PRT(U);
+  node*I =Intersect(head1, head2);
+  PRT(I);
+
+  return 0;
+}
+
+
+void Input(node* header , int num) 
+{                              
+    node* new;
+
+    new = (node*)malloc(sizeof(node));                                     
+    if (new == NULL) return;
+    new-> data = num;
+    new->next = NULL;
+
+    while (1) {                                                             
+        if (header->next == NULL)
+            break;
+        header = header->next;
+    }
+
+    header->next = new;                                                    
+}
+
+
+int subset(node* headA, node* headB) {
+  node* nodeA = headA->next;
+  node* nodeB = headB->next;
+  while (nodeA != NULL) {
+    while (nodeB != NULL && nodeB->data < nodeA->data) {
+      nodeB = nodeB->next;
+    }
+    if (nodeB == NULL || nodeB->data != nodeA->data) {
+      return nodeA->data;
+    }
+    nodeA = nodeA->next;
+    nodeB = nodeB->next;
+  }
+
+  return 0;
+}
+
+
+
+node* Union(node* A, node*B)
+{
+    node* a =A->next;
+    node*b=B->next;
+
+
+    if(a==NULL && b==NULL)
+    {
+        return NULL;
+    }
+
+    node*p = (node*)malloc(sizeof(node));
+
+    if(a==NULL)
+    {
+        p->data=b->data;
+        p->next=Union(A,B->next);
+    }
+
+    else if(b==NULL)
+    {
+        p->data =A->next->data;
+        p->next=Union(A->next, B);
+    }
+
+    else
+    {
+        if(a->data<b->data)
+        {
+            p->data=a->data;
+            p->next=Union(A->next, B);
+        }
+
+        else if(a->data>b->data)
+        {
+            p->data= b->data;
+            p->next=Union(A,B->next);
+        }
+        else if(a->data==b->data)
+        {
+             p->data=a->data;
+             p->next=Union(A->next,B->next);
+        }
+
+    }
+
+    return p;
+}
+
+node*Intersect(node*A, node*B)
+{
+    node* a =A->next; 
+    node*b=B->next;
+
+    node*p;
+    if(a==NULL || b==NULL)
+    {
+        return NULL;
+    }
+
+    if(a->data<b->data)
+    {
+        return Intersect(A->next, B);
+    }
+
+    else if(a->data> b->data)
+    {
+        return Intersect(A,B->next);
+    }
+
+    else{
+        p=(node*)malloc(sizeof(node));
+        p->data=a->data;
+        p->next = Intersect(A->next, B->next);
+        return p;
+
+
+    }
+
+
+}
+
+
+void PRT(node* head)
+{
+  if(head==NULL)
+    printf(" 0\n");
+
+  while(head!=NULL)
+    {
+      printf(" %d" , head-> data);
+      head = head -> next;
+    }
+  printf("\n");
+}
